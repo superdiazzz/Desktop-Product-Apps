@@ -12,16 +12,17 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":shared"))
+
+            // -- UI --
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.cio)
+
+
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
         }
