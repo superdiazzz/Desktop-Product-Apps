@@ -1,0 +1,15 @@
+CREATE TABLE product (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  price REAL NOT NULL
+);
+
+selectAll:
+SELECT * FROM product;
+
+insert:
+INSERT OR REPLACE INTO product(id, name, price)
+VALUES (?, ?, ?);
+
+deleteById:
+DELETE FROM product WHERE id = ?;

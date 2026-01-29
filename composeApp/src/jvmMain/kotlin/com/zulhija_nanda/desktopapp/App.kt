@@ -5,13 +5,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
-import com.zulhija_nanda.desktopapp.screen.ScrollScreen
+import com.zulhija_nanda.desktopapp.screen.HomeScreen
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        Navigator(ScrollScreen()){ navigator ->
+        Navigator(HomeScreen()){ navigator ->
             SlideTransition(navigator)
         }
 //        var showContent by remember { mutableStateOf(false) }

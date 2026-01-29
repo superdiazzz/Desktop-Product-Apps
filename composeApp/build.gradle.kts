@@ -22,6 +22,7 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
 
+            implementation(libs.ktor.serialization.kotlinx.json)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
