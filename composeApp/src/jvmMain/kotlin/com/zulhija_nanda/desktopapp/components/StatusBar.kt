@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,14 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.zulhija_nanda.product.shared.di.SharedContainer
+import com.zulhija_nanda.product.shared.util.NetworkMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun StatusBar(online: Boolean) {
+fun StatusBar() {
+    val online by NetworkMonitor.isOnline.collectAsState()
     var pending by remember { mutableStateOf(0L) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(online) {
         withContext(Dispatchers.IO) {
             pending = SharedContainer.syncManager.pendingCount()
         }
@@ -30,8 +33,8 @@ fun StatusBar(online: Boolean) {
 
     val color = when {
         !online -> Color.Red
-        pending > 0 -> Color.Blue
-        else -> Color.Green
+        pending > 0 -> Color(0xFF2196F3)
+        else -> Color(0xFF2E7D32)
     }
 
     val text = when {

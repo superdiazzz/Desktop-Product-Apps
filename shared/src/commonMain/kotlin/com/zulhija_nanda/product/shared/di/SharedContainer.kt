@@ -31,8 +31,12 @@ object SharedContainer {
         AppDatabase(driver)
     }
 
+    private val httpClient by lazy {
+        ApiClient.create()
+    }
+
     val api: ProductApi by lazy {
-        ProductApi(ApiClient.create(), USER_ID)
+        ProductApi(httpClient, USER_ID)
     }
 
     val syncManager: SyncManager by lazy {

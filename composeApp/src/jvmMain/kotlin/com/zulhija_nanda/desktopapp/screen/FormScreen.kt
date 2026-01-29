@@ -16,14 +16,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.zulhija_nanda.product.shared.di.SharedContainer
 import com.zulhija_nanda.product.shared.model.Product
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlin.random.Random
 
 class FormScreen(
     private val existing: Product? = null
@@ -32,8 +36,11 @@ class FormScreen(
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        var name by remember { mutableStateOf(existing?.name ?: "") }
-        var price by remember { mutableStateOf(existing?.price?.toString() ?: "") }
+        val navigator = LocalNavigator.current
+        val scope = rememberCoroutineScope()
+
+        var title by remember { mutableStateOf(existing?.title ?: "") }
+        var desc by remember { mutableStateOf(existing?.description ?: "") }
 
         Column(
             modifier = Modifier
@@ -48,16 +55,16 @@ class FormScreen(
             )
 
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                value = title,
+                onValueChange = { title = it },
                 label = { Text("Product Name") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                value = price,
-                onValueChange = { price = it },
-                label = { Text("Price") },
+                value = desc,
+                onValueChange = { desc = it },
+                label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -66,21 +73,25 @@ class FormScreen(
             Button(
                 onClick = {
                     val product = Product(
-                        id = existing?.id ?: UUID.randomUUID().toString(),
-                        name = name,
-                        price = price.toDoubleOrNull() ?: 0.0
+                        title = title,
+                        description = desc
                     )
 
                     // offline-first: langsung ke local + queue
-                    kotlinx.coroutines.CoroutineScope(
-                        kotlinx.coroutines.Dispatchers.IO
-                    ).launch {
+                    scope.launch(
+                       Dispatchers.IO
+                    ){
                         SharedContainer.repository.create(product)
                     }
+                    navigator?.pop()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(if (existing == null) "Save Product" else "Update Product")
+            }
+
+            Button(onClick = {navigator?.pop()}){
+                Text("Cancel")
             }
         }
     }

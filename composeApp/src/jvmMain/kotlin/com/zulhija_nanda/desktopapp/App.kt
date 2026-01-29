@@ -3,47 +3,33 @@ package com.zulhija_nanda.desktopapp
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.zulhija_nanda.desktopapp.screen.HomeScreen
+import com.zulhija_nanda.product.shared.di.SharedContainer
+import com.zulhija_nanda.product.shared.util.NetworkMonitor
 
 @Composable
 @Preview
 fun App() {
+
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        NetworkMonitor.start(scope)
+
+        NetworkMonitor.isOnline.collect { online ->
+            if(online){
+                SharedContainer.repository.refreshFromRemote()
+                SharedContainer.syncManager.syncIfOnline(true)
+            }
+        }
+    }
+
     MaterialTheme {
         Navigator(HomeScreen()){ navigator ->
             SlideTransition(navigator)
         }
-//        var showContent by remember { mutableStateOf(false) }
-//        var apiResponse by remember { mutableStateOf("Waiting...") }
-//        val scope = rememberCoroutineScope()
-//        Column(
-//            modifier = Modifier
-//                .background(MaterialTheme.colorScheme.primaryContainer)
-//                .safeContentPadding()
-//                .fillMaxSize(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//        ) {
-//            Button(onClick = {
-//                //showContent = !showContent
-//                scope.launch {
-//                    apiResponse = ApiService().fetchData()
-//                }
-//            }) {
-//                Text("Click me!")
-//            }
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Text("${apiResponse}")
-//            AnimatedVisibility(showContent) {
-//                val greeting = remember { Greeting().greet() }
-//                Column(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                ) {
-//                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-//                    Text("Compose: $apiResponse")
-//                }
-//            }
-//        }
     }
 }
