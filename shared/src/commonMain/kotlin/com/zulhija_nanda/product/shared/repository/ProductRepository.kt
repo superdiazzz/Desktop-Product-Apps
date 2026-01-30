@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 class ProductRepository(
     private val db: AppDatabase,
     private val api: ProductApi,
-    private val sync: SyncManager
+    private val sync: SyncManager,
 ) {
 
     fun observeProducts(): Flow<List<Product>> =
@@ -57,7 +57,7 @@ class ProductRepository(
     /**
      * OFFLINE-FIRST create
      */
-    suspend fun create(product: Product) {
+    suspend fun create(product: Product, isOnline: Boolean) {
         val localId = db.transactionWithResult {
             db.productQueries.insertLocal(
                 null,
@@ -72,12 +72,16 @@ class ProductRepository(
             "CREATE",
             product.copy(localId = localId)
         )
+
+        if(isOnline){
+            sync.syncIfOnline(true)
+        }
     }
 
     /**
      * Update local immediately, queue sync
      */
-    suspend fun update(product: Product) {
+    suspend fun update(product: Product, isOnline: Boolean) {
         requireNotNull(product.localId)
 
         db.productQueries.updateByLocalId(
@@ -87,6 +91,10 @@ class ProductRepository(
         )
 
         sync.enqueue("UPDATE", product)
+
+        if(isOnline){
+            sync.syncIfOnline(true)
+        }
     }
 
     /**

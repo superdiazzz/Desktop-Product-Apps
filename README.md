@@ -25,3 +25,39 @@ in your IDE’s toolbar or run it directly from the terminal:
 ---
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+### Project Structure
+```
+Desktop-Product-App/
+├─ build.gradle.kts
+├─ settings.gradle.kts
+├─ gradle/
+├─ composeApp/
+│  ├─ build.gradle.kts
+│  └─ src/jvmMain/kotlin/
+│     ├─ main.kt
+│     └─ ui/
+│        ├─ App.kt
+│        ├─ screen/
+│        │  ├─ HomeScreen.kt
+│        │  └─ FormScreen.kt
+│        └─ components/
+│           └─ StatusBar.kt
+└─ shared/
+   ├─ build.gradle.kts
+   └─ src/commonMain/kotlin/
+      ├─ di/
+      │  └─ SharedContainer.kt
+      ├─ model/
+      │  └─ Product.kt
+      ├─ network/
+      │  ├─ ApiClient.kt
+      │  └─ ProductApi.kt
+      ├─ repository/
+      │  └─ ProductRepository.kt
+      ├─ sync/
+      │  ├─ QueueEntity.kt
+      │  └─ SyncManager.kt
+      └─ util/
+         └─ NetworkMonitor.kt
+```

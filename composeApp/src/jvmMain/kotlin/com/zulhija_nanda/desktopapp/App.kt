@@ -10,6 +10,8 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.zulhija_nanda.desktopapp.screen.HomeScreen
 import com.zulhija_nanda.product.shared.di.SharedContainer
 import com.zulhija_nanda.product.shared.util.NetworkMonitor
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
 @Preview
@@ -19,12 +21,15 @@ fun App() {
     LaunchedEffect(Unit) {
         NetworkMonitor.start(scope)
 
-        NetworkMonitor.isOnline.collect { online ->
-            if(online){
-                SharedContainer.repository.refreshFromRemote()
+        NetworkMonitor.isOnline
+            .filter { it }
+            .collect {
+                // Sync dulu (dorong offline changes)
                 SharedContainer.syncManager.syncIfOnline(true)
+
+                //  Baru pull data dari server
+                SharedContainer.repository.refreshFromRemote()
             }
-        }
     }
 
     MaterialTheme {

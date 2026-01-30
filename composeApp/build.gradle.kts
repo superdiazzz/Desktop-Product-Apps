@@ -26,6 +26,7 @@ kotlin {
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
+            implementation(libs.material.icon.extended)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
