@@ -1,37 +1,15 @@
-This is a Kotlin Multiplatform project targeting Desktop (JVM).
+## Project Overview
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Desktop application berbasis Kotlin Multiplatform (JVM) dengan arsitektur offline-first.
+Aplikasi memungkinkan pengguna mengelola product baik offline maupun online, dengan sistem operation queue dan automatic synchronization saat koneksi tersedia.
 
-### Build and Run Desktop (JVM) Application
+## Video Result
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
-
-### Video Result
+Hasil project ini akan tampak seperti berikut.
 
 [![Watch the video](https://cdn.loom.com/sessions/thumbnails/514a8fe2f05e4d3e8247b80173c090d1-97ddd324f20b8012-full-play.gif#t=0.1)](https://www.loom.com/share/514a8fe2f05e4d3e8247b80173c090d1)
 
-
-### Project Structure
+## Project Structure
 ```
 Desktop-Product-App/
 ├─ build.gradle.kts
@@ -65,4 +43,110 @@ Desktop-Product-App/
       │  └─ SyncManager.kt
       └─ util/
          └─ NetworkMonitor.kt
+```
+
+## Architecture
+**UI:** Compose Multiplatform + Material 3
+
+**Navigation:** Voyager
+
+**Network:** Ktor Client
+
+**Local Database:** SQLDelight (SQLite)
+
+**Offline Strategy:** 
+  - Local DB sebagai Source of Truth
+  - Semua operasi Create/Update/Delete disimpan di queue
+  - Queue diproses otomatis saat online
+
+**Sync Strategy:**
+  - Push local changes -> Pull remote data
+
+**State Maagement:**
+  - Flow + StateFlow
+  - Reactive UI (Compose)
+
+
+## Offline-First Konsep
+
+| Scenario | Behavior |
+| :--- | :--- |
+| Offline Create | Disimpan ke local DB + queue |
+| Offline Update | Update local DB + queue |
+| Offline Delete | Delete local DB + queue |
+| Online Recovery | Queue diproses otomatis |
+| App Restart | Queue tetap tersimpan |
+
+## Network Monitoring
+  - Network status dipantau menggunakan NetworkMonitoring
+  - Sync otomatis dijalankan saat status berubah online
+  - UI menampilkan status:
+     - offline
+     - Synchronizing
+     - All synced
+
+## User Guide
+
+A. Add Product
+1. Klik Add Product
+2. Isi Title & Description
+3. Klik Save
+4. Product langsung muncul (offline maupun online)
+
+B. Edit Product
+  - Perubahan langsung tersimpan secara lokal
+  - Jika offline -> masuk queue
+
+C. Delete Product
+  - Product langsung hilang dari list
+  - Sync dilakukan saat online
+
+## Build Instructions
+
+  - JDK 17+
+  - Gradle (sudah disediakan di project)
+  - Internet connection
+  - OS:
+      - macOS
+      - Windows
+      - Linux
+
+## Run Apps (Desktop)
+
+Start the server
+
+```bash
+  ./gradlew :composeApp:run
+```
+
+atau (Windows)
+
+```bash
+  gradlew.bat :composeApp:run
+```
+
+Sebelum run, kamu bisa build terlebih dahulu
+
+```bash
+  ./gradlew :composeApp:build
+```
+
+## Build Distribusinya
+
+```bash
+  ./gradlew :composeApp:package
+```
+
+Output akan tersedia di:
+
+```bash
+  composeApp/build/compose/binaries
+```
+
+## Database Reset (Bila perlu)
+
+Untuk membersihkan local database
+
+```
+bashrm -rf ~/.<app-name>/
 ```
