@@ -26,6 +26,11 @@ in your IDE’s toolbar or run it directly from the terminal:
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
 
+### Video Result
+
+[![Watch the video](https://cdn.loom.com/sessions/thumbnails/514a8fe2f05e4d3e8247b80173c090d1-97ddd324f20b8012-full-play.gif#t=0.1)](https://www.loom.com/share/514a8fe2f05e4d3e8247b80173c090d1)
+
+
 ### Project Structure
 ```
 Desktop-Product-App/
