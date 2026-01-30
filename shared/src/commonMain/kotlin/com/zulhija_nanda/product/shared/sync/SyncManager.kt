@@ -1,9 +1,14 @@
 package com.zulhija_nanda.product.shared.sync
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.zulhija_nanda.product.shared.model.Product
 import com.zulhija_nanda.product.shared.model.ProductResponse
 import com.zulhija_nanda.product.shared.network.ProductApi
 import db.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
 class SyncManager(
@@ -38,4 +43,11 @@ class SyncManager(
 
     fun pendingCount(): Long =
         db.queueQueries.selectAll().executeAsList().size.toLong()
+
+    fun observePendingCount(): Flow<Long> =
+        db.queueQueries
+            .selectAll()
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.size.toLong() }
 }

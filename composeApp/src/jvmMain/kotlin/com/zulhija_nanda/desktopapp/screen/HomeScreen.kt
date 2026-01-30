@@ -66,14 +66,9 @@ class HomeScreen : Screen {
         val online by NetworkMonitor.isOnline.collectAsState()
         var searchQuery by remember { mutableStateOf("") }
         var showDeleteDialog by remember { mutableStateOf<Product?>(null) }
-        var pendingCount by remember { mutableStateOf(0L) }
-
-        // Update pending count
-        LaunchedEffect(online) {
-            withContext(Dispatchers.IO) {
-                pendingCount = SharedContainer.syncManager.pendingCount()
-            }
-        }
+        val pendingCount by SharedContainer.syncManager
+            .observePendingCount()
+            .collectAsState(initial = 0)
 
         // Filter products based on search
         val filteredProducts = remember(products, searchQuery) {
@@ -220,7 +215,7 @@ class HomeScreen : Screen {
                 product = product,
                 onConfirm = {
                     scope.launch(Dispatchers.IO) {
-                        SharedContainer.repository.delete(product)
+                        SharedContainer.repository.delete(product, online)
                     }
                     showDeleteDialog = null
                 },

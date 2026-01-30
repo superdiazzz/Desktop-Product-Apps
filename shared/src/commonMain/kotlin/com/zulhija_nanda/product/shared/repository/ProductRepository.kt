@@ -100,11 +100,15 @@ class ProductRepository(
     /**
      * Delete local immediately, queue sync
      */
-    suspend fun delete(product: Product) {
+    suspend fun delete(product: Product, isOnline: Boolean) {
         requireNotNull(product.localId)
 
         db.productQueries.deleteByLocalId(product.localId)
 
         sync.enqueue("DELETE", product)
+
+        if(isOnline){
+            sync.syncIfOnline(true)
+        }
     }
 }
